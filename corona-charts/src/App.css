@@ -1,0 +1,99 @@
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  /* justify-content: center; */
+  align-content: center;
+  align-items: flex-start;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 10s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.left-container {
+  width: calc(25vw - 22px);
+  height: calc(100vh - 22px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(252, 137, 42);
+  margin: 10px;
+  border: black 1px solid;
+}
+
+.middle-container {
+  width: 50vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(252, 248, 42);
+  border: black 1px solid;
+}
+
+.middle-container-top {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  background-color: rgb(91, 252, 42);
+  border: darkolivegreen 1px solid;
+
+}
+
+.main-chart {
+  min-height: 75vh;
+}
+
+
+
+.middle-container-bottom {
+  width: calc(100% - 22px);
+  min-height: calc(25vh - 22px);
+  background-color: rgb(252, 248, 42);
+  margin: 10px;
+  border: black 1px solid;
+}
+
+
+.right-container {
+  width: calc(25vw - 22px);
+  height: calc(100vh - 22px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(252, 56, 42);
+  margin: 10px;
+  border: black 1px solid;
+}

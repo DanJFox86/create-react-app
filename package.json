@@ -59,5 +59,8 @@
     "yarn.lock": [
       "git rm --cached"
     ]
+  },
+  "dependencies": {
+    "react-scripts": "^3.4.1"
   }
 }
