@@ -75,7 +75,9 @@ class App extends Component {
           <div>Left Container</div>
         </div>
         <div className="middle-container">
-          <canvas id="myChart" className="main-chart"></canvas>
+          <div className="middle-container-top">
+            <canvas id="myChart" className="main-chart"></canvas>
+          </div>
           <div className="middle-container-bottom">Bottom Container</div>
         </div>
         <div className="right-container">

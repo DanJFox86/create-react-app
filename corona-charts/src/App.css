@@ -59,31 +59,32 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: rgb(252, 248, 42);
-  border: black 1px solid;
 }
 
 .middle-container-top {
   display: flex;
   flex-direction: column;
   align-content: flex-start;
-  background-color: rgb(91, 252, 42);
-  border: darkolivegreen 1px solid;
-
 }
 
 .main-chart {
-  min-height: 75vh;
+  min-height: calc(75vh - 12px);
+  border: black 1px solid;
+  background-color: rgb(91, 252, 42);
+  margin: 10px 0px 0px 0px;
 }
 
 
 
 .middle-container-bottom {
-  width: calc(100% - 22px);
+  width: calc(100% - 2px);
   min-height: calc(25vh - 22px);
   background-color: rgb(252, 248, 42);
-  margin: 10px;
+  margin: 10px 0px 10px 0px;
   border: black 1px solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 
