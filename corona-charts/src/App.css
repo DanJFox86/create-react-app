@@ -44,7 +44,7 @@
 }
 
 .left-container {
-  width: calc(25vw - 22px);
+  width: calc(15vw - 22px);
   height: calc(100vh - 22px);
   display: flex;
   justify-content: center;
@@ -55,24 +55,27 @@
 }
 
 .middle-container {
-  width: 50vw;
+  width: 70vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  align-items: space-between;
 }
 
 .middle-container-top {
+  height: 75vh;
   display: flex;
-  flex-direction: column;
-  align-content: flex-start;
-  height: 75%;
+  flex-wrap: wrap column;
+  align-items: flex-start;
+  justify-content: center;
   margin: 10px 0px 0px 0px;
+  background-color: blue;
 }
 
 .main-chart {
   min-height: calc(100% - 2px);
-  width: calc(100% - 2px);
+  min-width: calc(100% - 2px);
   border: black 1px solid;
   background-color: rgb(47, 255, 220);
 }
@@ -80,7 +83,7 @@
 
 
 .middle-container-bottom {
-  height: 25%;
+  height: 25vh;
   background-color: rgb(252, 248, 42);
   margin: 10px 0px 10px 0px;
   border: black 1px solid;
@@ -91,7 +94,7 @@
 
 
 .right-container {
-  width: calc(25vw - 22px);
+  width: calc(15vw - 22px);
   height: calc(100vh - 22px);
   display: flex;
   justify-content: center;

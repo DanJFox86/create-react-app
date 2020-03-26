@@ -133,7 +133,6 @@ class App extends Component {
   
 
   buildChart() {
-    let onClick = this.onClick;
     const myChartRef = this.chartRef.current.getContext("2d");
     if (typeof myCovidChart !== "undefined") myCovidChart.destroy();
     let dates = [];
@@ -190,7 +189,7 @@ class App extends Component {
             }
           }]
         },
-        onClick: onClick,
+        onClick: this.onClick,
         tooltips: {
           mode: 'x'
         }

@@ -5,7 +5,7 @@ const fs = Promise.promisifyAll(require('fs'));
 const db = require('./postgresqlController.js');
 // const { menuSeed, dishSeed, itemSubCatJoinSeed, connectDB, disconnectDB, truncateTables } = require('./postgresqlController.js');
 
-let filePaths = [['./database/Data/time_series_19-covid-Confirmed.csv', 'confirmed'], ['./database/Data/time_series_19-covid-Deaths.csv', 'deaths'], ['./database/Data/time_series_19-covid-Recovered.csv', 'recovered']];
+let filePaths = [['./database/Data/time_series_covid19_confirmed_global.csv', 'confirmed'], ['./database/Data/time_series_covid19_deaths_global.csv', 'deaths'], ['./database/Data/time_series_covid19_recovered_global.csv', 'recovered']];
 let countriesQuery = `INSERT INTO countries (name) VALUES `;
 let statesQuery = `INSERT INTO states (name, country_id) VALUES `;
 let dataPointQuery = `INSERT INTO data (value, type_id, country_id, state_id, date_id) VALUES `;
@@ -94,6 +94,8 @@ const populateDataSet = (root, country, state) => {
   if (state === undefined) {
     // console.log(`${country} has no states`)
   }
+  // console.log('populating dataset')
+  // console.log(Object.keys(root))
   Object.keys(root).forEach((type) => {
     root[type].forEach((dataPoint, idx) => {
       dataPointQuery += `( ${dataPoint}, ${typesArr.indexOf(type) + 1}, ${countriesArr.indexOf(country) + 1}, ${state !== undefined ? statesArr.indexOf(state) + 1 : 'NULL'},  ${idx + 1}), `;
@@ -127,9 +129,11 @@ const populateQueries = () => {
     } else {
       for (let state in node) {
         node = root[country][state];
+        // console.log(node)
         if (!node.isTown) {
           statesQuery += `( '${state}', ${countriesArr.indexOf(country) + 1} ), `;
-          // console.log(JSON.stringify(node));
+          console.log(`State = ${state}`)
+          console.log(JSON.stringify(node));
           populateDataSet(node, country, state);
         }
       }
