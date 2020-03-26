@@ -121,7 +121,7 @@ module.exports.connectDB = (callback) => {
 }
 
 module.exports.runQuery = (query) => {
-  console.log(`Running query ${query.slice(0, query.indexOf('VALUES'))}`)
+  // console.log(`Running query ${query.slice(0, query.indexOf('VALUES'))}`)
   return new Promise((resolve, reject) => {
     client.query(query, (err, result) => {
       if (err) {
@@ -132,8 +132,9 @@ module.exports.runQuery = (query) => {
     });
   })
 }
-module.exports.disconnectDB = (callback) => {
+module.exports.disconnectDB = (callback = () => {} ) => {
   client.end();
+  callback();
 }
 
 module.exports.dishSeed = (path, callback) => {

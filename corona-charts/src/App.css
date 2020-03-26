@@ -56,29 +56,31 @@
 
 .middle-container {
   width: 50vw;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
 }
 
 .middle-container-top {
   display: flex;
   flex-direction: column;
   align-content: flex-start;
+  height: 75%;
+  margin: 10px 0px 0px 0px;
 }
 
 .main-chart {
-  min-height: calc(75vh - 12px);
+  min-height: calc(100% - 2px);
+  width: calc(100% - 2px);
   border: black 1px solid;
-  background-color: rgb(91, 252, 42);
-  margin: 10px 0px 0px 0px;
+  background-color: rgb(47, 255, 220);
 }
 
 
 
 .middle-container-bottom {
-  width: calc(100% - 2px);
-  min-height: calc(25vh - 22px);
+  height: 25%;
   background-color: rgb(252, 248, 42);
   margin: 10px 0px 10px 0px;
   border: black 1px solid;

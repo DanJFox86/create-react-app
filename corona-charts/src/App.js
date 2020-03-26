@@ -1,47 +1,117 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import ChartModule from './Chart-module.js';
+import ChartModule from './ChartLoader.js';
 import Chart from 'chart.js';
+import ChartLoader from './ChartLoader.js';
 import './App.css';
+
+let myCovidChart;
 
 class App extends Component {
 
   constructor() {
     super();
     this.state = {
-      data: []
+      data: { points: [{value:1, date_id:1, type_id: 1},{value:2, date_id:2, type_id: 2},{value:3, date_id:3, type_id: 3}],
+              dates: [{id: 1, text: '03/18/2020'},{id: 2, text: '03/19/2020'},{id: 3, text: '03/20/2020'}],
+              types: [{id: 1, name: 'confirmed'},{id: 2, name: 'deaths'},{id: 3, name: 'recovered'}]
+            },
+      focus: {
+        index: -1,
+        type_id: 0
+      }
     };
+    this.displayStateData = this.displayStateData.bind(this);
+    this.renderChart = this.renderChart.bind(this);
+    this.buildChart = this.buildChart.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
+  chartRef = React.createRef();
+
   componentDidMount() {
+    fetch('http://localhost:3000/89')
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        // this.renderChart(data);
+        this.setState( { data }, this.buildChart);
+        // this.buildChart();
+      });
+  }
+
+  // componentDidUpdate() {
+  //   this.buildChart();
+  // }
+
+  displayStateData() {
+    console.log(this.state.data);
+  }
+  
+  onClick(context) {
+    if (myCovidChart.getElementAtEvent(context).length > 0) {
+      let focus = {};
+      console.log(myCovidChart.getElementAtEvent(context)[0])
+      focus.index = myCovidChart.getElementAtEvent(context)[0]._index;
+      focus.type_id = myCovidChart.getElementAtEvent(context)[0]._datasetIndex;
+      this.setState( { focus });
+    }
+
+    // state.setState( { index } );
+  }
+
+  renderChart(data) {
     let ctx = document.getElementById('myChart');
+    let onClick = this.onClick;
     if(myChart) {
       myChart.destroy();
     }
+    let dates = [];
+    this.state.data.dates.forEach((date) => {
+      dates.push(date.text);
+    });
+    let confirmed = [];
+    let deaths = [];
+    let recovered = [];
+    this.state.data.points.forEach((point) => {
+      switch(Number(point.type_id)) {
+        case 1:
+          confirmed.push(point.value);
+          break;
+        case 2:
+          deaths.push(point.value);
+          break;
+        case 3:
+          recovered.push(point.value);
+          break;
+      }
+    });
+    dates.pop();
+    confirmed.pop();
+    deaths.pop();
+    recovered.pop();
     var myChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: dates,
         datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
+            label: 'Confirmed',
+            data: confirmed,
+            
+            borderColor: 'rgba(0,164,0,0.8)',
             borderWidth: 2
+        },
+        {
+          label: 'Deaths',
+          data: deaths,
+          borderColor: 'rgba(164,0,0,0.8)'
+        },
+        {
+          label: 'Recovered',
+          data: recovered,
+          borderColor: 'rgba(0,0,164,0.8)'
         }]
     },
       options: {
@@ -51,6 +121,78 @@ class App extends Component {
               beginAtZero: false
             }
           }]
+        },
+        onClick: onClick,
+        tooltips: {
+          mode: 'x'
+        }
+      }
+    });
+  }
+
+  
+
+  buildChart() {
+    let onClick = this.onClick;
+    const myChartRef = this.chartRef.current.getContext("2d");
+    if (typeof myCovidChart !== "undefined") myCovidChart.destroy();
+    let dates = [];
+    this.state.data.dates.forEach((date) => {
+      dates.push(date.text);
+    });
+    let confirmed = [];
+    let deaths = [];
+    let recovered = [];
+    this.state.data.points.forEach((point) => {
+      switch(Number(point.type_id)) {
+        case 1:
+          confirmed.push(point.value);
+          break;
+        case 2:
+          deaths.push(point.value);
+          break;
+        case 3:
+          recovered.push(point.value);
+          break;
+      }
+    });
+    dates.pop();
+    confirmed.pop();
+    deaths.pop();
+    recovered.pop();
+    myCovidChart = new Chart(myChartRef, {
+      type: 'line',
+      data: {
+        labels: dates,
+        datasets: [{
+            label: 'Confirmed',
+            data: confirmed,
+            
+            borderColor: 'rgba(0,164,0,0.8)',
+            borderWidth: 2
+        },
+        {
+          label: 'Deaths',
+          data: deaths,
+          borderColor: 'rgba(164,0,0,0.8)'
+        },
+        {
+          label: 'Recovered',
+          data: recovered,
+          borderColor: 'rgba(0,0,164,0.8)'
+        }]
+    },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: false
+            }
+          }]
+        },
+        onClick: onClick,
+        tooltips: {
+          mode: 'x'
         }
       }
     });
@@ -58,17 +200,29 @@ class App extends Component {
   }
 
 
+
   render() {
-    // var ctx = document.getElementById('myChart');
-    // console.log(`here's the data we are working with `, this.state.data);
-    let labels = [];
-    let data = [];
-    // if (this.state.data.length > -1) {
-    //   this.state.data.forEach((dataPoint) => {
-    //     labels.push(dataPoint[0]);
-    //     data.push(dataPoint[1]);
-    //   });
+    // if (myCovidChart !== undefined) {
+    //   this.buildChart();
     // }
+    let value = '--';
+    let date = '--/--/--';
+    let type = '--';
+    let { index, type_id } = this.state.focus;
+    if (index > -1) {
+      // console.log(this.state.data.points[index].value)
+      let date_id = this.state.data.dates[index].id;
+      type_id += 1;
+      for(let i = 0; i < this.state.data.points.length; i++) {
+        if (this.state.data.points[i].date_id === date_id && this.state.data.points[i].type_id === type_id) {
+          value = this.state.data.points[i].value;
+        }
+      }
+      date = this.state.data.dates[index].text;
+      type = this.state.data.types[type_id - 1].name;
+    //   date = this.state.data.dates[this.state.index].text;
+    //   type = this.state.data.types[type_id - 1];
+    }
     return (
       <div className="App">
         <div className="left-container">
@@ -76,12 +230,19 @@ class App extends Component {
         </div>
         <div className="middle-container">
           <div className="middle-container-top">
-            <canvas id="myChart" className="main-chart"></canvas>
+            <canvas
+                    id="myChart"
+                    ref={this.chartRef}
+                    className="main-chart"
+                />
           </div>
           <div className="middle-container-bottom">Bottom Container</div>
         </div>
         <div className="right-container">
-          <div>Right Container</div>
+          <div>Focus Index is now {this.state.index}</div>
+          <div>date: {date}</div>
+          <div>value: {value}</div>
+          <div>type: {type}</div>
         </div>
         {/* <header className="App-header">      
           <img src={logo} className="App-logo" alt="logo" />
