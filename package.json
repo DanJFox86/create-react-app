@@ -18,7 +18,9 @@
     "test": "cd packages/react-scripts && node bin/react-scripts.js test",
     "format": "prettier --trailing-comma es5 --single-quote --write 'packages/*/*.js' 'packages/*/!(node_modules)/**/*.js'",
     "compile:lockfile": "node tasks/compile-lockfile.js",
-    "server-dev": "nodemon ./server/index.js --watch"
+    "server-dev": "nodemon ./server/index.js --watch",
+    "seed": "node ./database/seedData.js",
+    "createdb": "node ./database/createDatabase.js"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.0",
@@ -63,9 +65,11 @@
   },
   "dependencies": {
     "bluebird": "^3.7.2",
-    "nodemon": "^2.0.2",
+    "body-parser": "^1.19.0",
     "chart.js": "^2.9.3",
     "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.2",
     "pg": "^7.18.2",
     "react-scripts": "^3.4.1",
     "underscore": "^1.9.2"

@@ -52,58 +52,6 @@ CREATE TABLE data (
 );
 `;
 
-
-/* CREATE TABLE subcategories (
-  id int NOT NULL,
-  name VARCHAR(30) NOT NULL,
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE categories (
-  id int NOT NULL,
-  name VARCHAR(30) NOT NULL,
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE menuItems (
-  id INT NOT NULL,
-  name VARCHAR(50) NOT NULL,
-  description VARCHAR(200) NOT NULL,
-  price float(2)  NOT NULL,
-  business_id INT NOT NULL,
-  subcat_id INT NOT NULL,
-  cat_id INT NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (business_id) REFERENCES menus(id),
-  FOREIGN KEY (cat_id) REFERENCES categories(id),
-  FOREIGN KEY (subcat_id) REFERENCES subcategories(id)
-);
-
-CREATE TABLE catSubcatJoin (
-  id int NOT NULL,
-  category_id int NOT NULL,
-  subcat_id int NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (category_id) REFERENCES categories(id),
-  FOREIGN KEY (subcat_id) REFERENCES subcategories(id)
-);
-
-CREATE TABLE subcatItemJoin (
-  id int NOT NULL,
-  subcat_id int NOT NULL,
-  item_id int NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (subcat_id) REFERENCES subcategories(id),
-  FOREIGN KEY (item_id) REFERENCES menuitems(id)
-  */
-
-//client.connect()
-//  .then(() => {
-//    createTables();
-//  })
-//  .catch((err) => {
-//    console.log(`Hit an error:       `, err)
-//  });
 module.exports.createTables = (callback) => {
   client.query(createTablesQuery, (err, result) => {
     if (err) {
@@ -139,6 +87,10 @@ module.exports.disconnectDB = (callback = () => {} ) => {
 
 module.exports.dishSeed = (path, callback) => {
   client.query(`COPY menuItems FROM '${path}' CSV HEADER;`, callback);
+}
+
+module.exports.initialize = (callback) => {
+  client.query(`SELECT * FROM COUNTRIES`, callback);
 }
 
 

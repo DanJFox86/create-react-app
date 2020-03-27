@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import ChartModule from './ChartLoader.js';
 import Chart from 'chart.js';
-import ChartLoader from './ChartLoader.js';
 import './App.css';
+import LeftContainer from './LeftContainer.js';
 
 let myCovidChart;
 
@@ -12,6 +10,8 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
+      countries: [],
+      states: [],
       data: { points: [{value:1, date_id:1, type_id: 1},{value:2, date_id:2, type_id: 2},{value:3, date_id:3, type_id: 3}],
               dates: [{id: 1, text: '03/18/2020'},{id: 2, text: '03/19/2020'},{id: 3, text: '03/20/2020'}],
               types: [{id: 1, name: 'confirmed'},{id: 2, name: 'deaths'},{id: 3, name: 'recovered'}]
@@ -25,21 +25,36 @@ class App extends Component {
     this.renderChart = this.renderChart.bind(this);
     this.buildChart = this.buildChart.bind(this);
     this.onClick = this.onClick.bind(this);
+    this.countryClick = this.countryClick.bind(this);
   }
 
   chartRef = React.createRef();
 
   componentDidMount() {
-    fetch('http://localhost:3000/89')
+    // fetch('http://localhost:3000/89')
+    //   .then((response) => {
+    //     return response.json();
+    //   })
+    //   .then((data) => {
+    //     console.log(data);
+    //     // this.renderChart(data);
+    //     this.setState( { data }, this.buildChart);
+    //     // this.buildChart();
+    //   });
+    fetch('http://localhost:3000/initialize')
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
-        // this.renderChart(data);
-        this.setState( { data }, this.buildChart);
-        // this.buildChart();
+        return data.rows;
+      })
+      .then((countries) => {
+        // console.log(countries);
+        this.setState( { countries } );
       });
+        // this.renderChart(data);
+        // this.setState( { countries });
+        // this.buildChart();
   }
 
   // componentDidUpdate() {
@@ -56,7 +71,7 @@ class App extends Component {
       console.log(myCovidChart.getElementAtEvent(context)[0])
       focus.index = myCovidChart.getElementAtEvent(context)[0]._index;
       focus.type_id = myCovidChart.getElementAtEvent(context)[0]._datasetIndex;
-      this.setState( { focus });
+      this.setState( { focus } );
     }
 
     // state.setState( { index } );
@@ -130,8 +145,6 @@ class App extends Component {
     });
   }
 
-  
-
   buildChart() {
     const myChartRef = this.chartRef.current.getContext("2d");
     if (typeof myCovidChart !== "undefined") myCovidChart.destroy();
@@ -155,10 +168,7 @@ class App extends Component {
           break;
       }
     });
-    dates.pop();
-    confirmed.pop();
-    deaths.pop();
-    recovered.pop();
+
     myCovidChart = new Chart(myChartRef, {
       type: 'line',
       data: {
@@ -198,12 +208,23 @@ class App extends Component {
 
   }
 
-
+  countryClick(e) {
+    let { value } = e.target;
+    let countryPath = `http://localhost:3000/country/${value}`;
+    console.log(countryPath);
+    fetch(countryPath)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        // this.renderChart(data);
+        this.setState( { data }, this.buildChart);
+        // this.buildChart();
+      });
+  }
 
   render() {
-    // if (myCovidChart !== undefined) {
-    //   this.buildChart();
-    // }
     let value = '--';
     let date = '--/--/--';
     let type = '--';
@@ -224,9 +245,7 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <div className="left-container">
-          <div>Left Container</div>
-        </div>
+        <LeftContainer countryClick={this.countryClick} countries={this.state.countries}/>
         <div className="middle-container">
           <div className="middle-container-top">
             <canvas

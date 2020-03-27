@@ -47,12 +47,19 @@
   width: calc(15vw - 22px);
   height: calc(100vh - 22px);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: rgb(252, 137, 42);
   margin: 10px;
   border: black 1px solid;
 }
+
+#country-select {
+  width: 10vw;
+}
+
+
 
 .middle-container {
   width: 70vw;
@@ -97,6 +104,7 @@
   width: calc(15vw - 22px);
   height: calc(100vh - 22px);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: rgb(252, 56, 42);

@@ -11,7 +11,8 @@ let statesQuery = `INSERT INTO states (name, country_id) VALUES `;
 let dataPointQuery = `INSERT INTO data (value, type_id, country_id, state_id, date_id) VALUES `;
 let typesArr = ['confirmed', 'deaths', 'recovered'];
 let typesQuery = `INSERT INTO types (name) VALUES ( '${typesArr.join(`' ), ( '`)}' );`;
-console.log(typesQuery);
+let ignoreCountries = ['Kosovo', 'Cruise Ship', 'Cape Verde', 'Korea', 'Bahamas', 'Gambia', 'Ivoire'];
+
 
 let countriesArr = [];
 let statesArr = [];
@@ -27,7 +28,15 @@ const formatData = (data, type) => {
   data = data.split('\n');
   
   for (let i = 0; i < data.length; i++) {
-    if (data[i].indexOf('Korea') > -1 || data[i].indexOf('Bahamas') > -1 || data[i].indexOf('Gambia') > -1 || data[i].indexOf('Ivoire') > -1) {
+    let isIgnore = ignoreCountries.reduce((acc, country) => {
+      if (data[i].indexOf(country) > -1) {
+        console.log(country)
+        return true;
+      }
+      return acc || false;
+    }, false);
+    // console.log(`isIgnore = `, isIgnore);
+    if (isIgnore) {
       data.splice(i, 1);
       i--;
       continue;
@@ -47,7 +56,9 @@ const formatData = (data, type) => {
   let states = {};
   for (let i = 0; i < data.length; i++) {
     if (i === 0) {
-      datesArr = data[i].slice(4);
+      let possibleDates = data[i].slice(4);
+      datesArr = possibleDates.length > datesArr.length ? possibleDates : datesArr;
+      console.log(datesArr.length)
     } else {
       
       node = root;
@@ -96,18 +107,28 @@ const populateDataSet = (root, country, state) => {
   }
   // console.log('populating dataset')
   // console.log(Object.keys(root))
-  Object.keys(root).forEach((type) => {
-    root[type].forEach((dataPoint, idx) => {
-      dataPointQuery += `( ${dataPoint}, ${typesArr.indexOf(type) + 1}, ${countriesArr.indexOf(country) + 1}, ${state !== undefined ? statesArr.indexOf(state) + 1 : 'NULL'},  ${idx + 1}), `;
-    });
-  });
+  filePaths.forEach((path, idx) => {
+    let key = path[1];
+    let arr = root[key];
+    if (arr) {
+      arr.forEach((dataPoint, idx)=>{
+        dataPointQuery += `( ${dataPoint}, ${typesArr.indexOf(key) + 1}, ${countriesArr.indexOf(country) + 1}, ${state !== undefined ? statesArr.indexOf(state) + 1 : 'NULL'},  ${idx + 1}), `;
+
+      });
+    }
+  })
+  // Object.keys(root).forEach((type) => {
+  //   root[type].forEach((dataPoint, idx) => {
+  //     dataPointQuery += `( ${dataPoint}, ${typesArr.indexOf(type) + 1}, ${countriesArr.indexOf(country) + 1}, ${state !== undefined ? statesArr.indexOf(state) + 1 : 'NULL'},  ${idx + 1}), `;
+  //   });
+  // });
 }
 
 const populateQueries = () => {
   let node = root;
   
   for (let country in root) {
-    if (country === undefined) {
+    if (country === undefined || ignoreCountries.includes(country)) {
       continue;
     }
     countriesArr.push(country)
@@ -132,7 +153,7 @@ const populateQueries = () => {
         // console.log(node)
         if (!node.isTown) {
           statesQuery += `( '${state}', ${countriesArr.indexOf(country) + 1} ), `;
-          console.log(`State = ${state}`)
+          console.log(`State = ${state}\nCountry = ${country}`)
           console.log(JSON.stringify(node));
           populateDataSet(node, country, state);
         }
@@ -144,9 +165,9 @@ const populateQueries = () => {
   countriesQuery += `( '` + countriesArr.join(`' ), ( '`) + `' );`;
   dataPointQuery = dataPointQuery.slice(0, dataPointQuery.length - 2) + `;`;
   datesQuery += `( '${datesArr.join(`' ), ( '`)}` + `' );`; 
-  console.log(countriesQuery);
+  // console.log(countriesQuery);
 
-  // console.log(dataPointQuery);
+  console.log(dataPointQuery.slice(0, 1000));
   
   // statesQuery = statesQuery.slice(0, statesQuery.length - 1) + `;`;
   // countriesQuery = countriesQuery.slice(0, countriesQuery.length - 1) + `;`;
@@ -181,14 +202,34 @@ const seedData = () => {
       return;
     })
     .then(() => {
-      console.log('Populating queries')
+      // console.log(JSON.stringify(Object.keys(root['Canada'])));
+      // console.log(JSON.stringify(root['Canada']['recovered']));
+      // console.log(JSON.stringify(root['Canada']['Recovered']));
+      // let total = Object.keys(root['Canada']).reduce((acc, val) => {
+      //   if (val !== 'recovered') {
+      //     return acc + root['Canada'][val]['recovered'][root['Canada'][val]['recovered'].length - 1];
+      //   }
+      //   return acc;
+      //   // console.log(key, '   ', JSON.stringify(Object.keys(root[key])));
+
+      // });
+      // for (let key in root['Canada']) {
+      //   console.log(JSON.stringify(root['Canada'][key]))
+      // }
+      // Object.keys(root['Canada']).forEach((key) => {
+
+      // })
+      // console.log(root['Canada']['Alberta']);
+      // console.log('Populating queries')
       populateQueries();
+      // console.log(dataPointQuery)
       let queries = [];
+      queries.push(datesQuery);
       queries.push(countriesQuery);
       queries.push(statesQuery);
       queries.push(typesQuery);
-      queries.push(datesQuery);
       queries.push(dataPointQuery);
+      let arr = ['countries', 'states', 'types','dates','data'];
 
       db.connectDB((err, result) => {
         if (err) {
@@ -196,11 +237,12 @@ const seedData = () => {
           db.disconnectDB();
         } else {
           let promises = [];
-          queries.forEach((query) => {
+          queries.forEach((query, idx) => {
+            console.log(`Running ${arr[idx]} query`);
             promises.push(db.runQuery(query))
           });
           Promise.all(promises)
-            .then((result) => {
+            .then(() => {
               console.log('all queries have been run')
               db.disconnectDB();
             });
